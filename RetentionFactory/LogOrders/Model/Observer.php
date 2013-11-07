@@ -54,7 +54,9 @@ class RetentionFactory_LogOrders_Model_Observer
 							$customer_id = 'guest-'.$customer_email;
 							$customer_created_at = null;
 						}
-						$to_post = array('order_lines'=>array(),
+						$to_post = array(
+									'tracking_site_id'=>'tk2h32',
+									'order_lines'=>array(),
 									'customer'=>array('email'=>$customer_email,
 													'org_id'=>$customer_id,
 													'org_created_at'=>$customer_created_at),
@@ -78,6 +80,7 @@ class RetentionFactory_LogOrders_Model_Observer
 					    }
 						$json = json_encode($to_post);
 						Mage::log("Posting JSON: {$json}");
+						$this->postJSONToRetentionFactory($json);
 					} else {
 						Mage::log("customer is null, ignoring");
 					}//isset($customer)
@@ -91,4 +94,30 @@ class RetentionFactory_LogOrders_Model_Observer
 			Mage::log("RetentionFactory Observer Caught An Exception: ".$e->getMessage());
 		}		
     }
+
+	private function postJSONToRetentionFactory($json){
+		// Create the context for the request
+		$context = stream_context_create(array(
+		    'http' => array(
+		        // http://www.php.net/manual/en/context.http.php
+		        'method' => 'POST',
+		        'header' => "Content-Type: application/json\r\n",
+		        //'header' => "Authorization: {$authToken}\r\nContent-Type: application/json\r\n",
+		        'content' => $json
+		    )
+		));
+		
+		Mage::Log("sending post");
+		// Send the request
+		$response = file_get_contents('http://localhost:5000/api/v1/order/track', FALSE, $context);
+		Mage::Log("got response ".$response);
+		
+		// Check for errors
+		if($response === FALSE){
+		    Mage::Log("Got an error response from retentionfactory.com: ".$response);
+		}
+		
+		// Decode the response
+		//$responseData = json_decode($response, TRUE);		
+	}
 }
