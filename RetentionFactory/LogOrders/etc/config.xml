@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- see: http://coding.smashingmagazine.com/2012/03/01/basics-creating-magento-module/ -->
+<!-- The root node for Magento module configuration -->
+<config> 
+    <!-- 
+        The module's node contains basic 
+        information about each Magento module
+    -->
+    <modules>
+        <!--
+            This must exactly match the namespace and module's folder
+            names, with directory separators replaced by underscores
+        -->
+        <RetentionFactory_LogOrders>
+            <!-- The version of our module, starting at 0.0.1 -->
+            <version>0.0.1</version>
+        </RetentionFactory_LogOrders>
+    </modules>
+
+<!-- Configure our module's behavior in the global scope -->
+    <global>
+       <!-- Defining models -->
+        <models>
+
+            <!--
+                Unique identifier in the model's node.
+                By convention, we put the module's name in lowercase.
+            -->
+            <retentionfactory_logorders>
+
+                <!--
+                    The path to our models directory, with directory
+                    separators replaced by underscores
+                -->
+                <class>RetentionFactory_LogOrders_Model</class>
+
+            </retentionfactory_logorders>
+
+        </models>
+        <!-- Defining an event observer -->
+        <events>
+            <!-- The code of the event we want to observe -->
+            <sales_order_save_after>
+                <!-- Defining an observer for this event -->
+                <observers>
+                    <!--
+                        Unique identifier within the 
+                        catalog_product_save_after node.
+                        By convention, we write the module's 
+                        name in lowercase.
+                    -->
+                    <retentionfactory_logorders>
+                        <!-- The model to be instantiated -->
+                        <class>retentionfactory_logorders/observer</class>
+                        <!-- The method of the class to be called -->
+                        <method>logOrder</method>
+                        <!-- The type of class to instantiate -->
+                        <type>singleton</type>
+                    </retentionfactory_logorders >
+                </observers>
+            </sales_order_save_after>
+        </events>
+    </global>
+</config>
